@@ -32,7 +32,7 @@ class Dcm_tagSub(ChrisApp):
     TYPE                    = 'ds'
     DESCRIPTION             = 'This plugin wraps around pfdicom_tagSub and is used to edit the contents of user-specified DICOM tags.'
     DOCUMENTATION           = 'https://github.com/FNNDSC/pl-pfdicom_tagSub'
-    VERSION                 = '0.1'
+    VERSION                 = '1.0'
     ICON                    = '' # url of an icon image
     LICENSE                 = 'Opensource (MIT)'
     MAX_NUMBER_OF_WORKERS   = 1  # Override with integer value
@@ -141,7 +141,6 @@ class Dcm_tagSub(ChrisApp):
         """
         Define the code to be run by this plugin app.
         """
-        pudb.set_trace()
         pf_dicom_tagSub = pfdicom_tagSub.pfdicom_tagSub(
                         inputDir            = options.inputdir,
                         inputFile           = options.inputFile,
