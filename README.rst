@@ -53,7 +53,7 @@ Invariably, some debugging will be required. In order to debug efficiently, map 
             ' --threads 0 -v 2 -e .dcm                                      \
             /incoming /outgoing
 
-This assumes that the source code the underlying ``pfdicom_tagExtract.py`` module is accessible as shown.
+This assumes that the source code the underlying ``pfdicom_tagSub.py`` module is accessible as shown.
 
 Make sure that the host ``$(pwd)/out`` directory is world writable!
 
