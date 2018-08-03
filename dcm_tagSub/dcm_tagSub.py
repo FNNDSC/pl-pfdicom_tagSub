@@ -32,7 +32,7 @@ class Dcm_tagSub(ChrisApp):
     TYPE                    = 'ds'
     DESCRIPTION             = 'This plugin wraps around pfdicom_tagSub and is used to edit the contents of user-specified DICOM tags.'
     DOCUMENTATION           = 'https://github.com/FNNDSC/pl-pfdicom_tagSub'
-    VERSION                 = '1.0.2'
+    VERSION                 = '1.0.4'
     ICON                    = '' # url of an icon image
     LICENSE                 = 'Opensource (MIT)'
     MAX_NUMBER_OF_WORKERS   = 1  # Override with integer value
@@ -123,6 +123,13 @@ class Dcm_tagSub(ChrisApp):
                             type        = bool,
                             optional    = True,
                             default     = False)
+        self.add_argument("--followLinks",
+                            help        = "follow symbolic links",
+                            dest        = 'followLinks',
+                            action      = 'store_true',
+                            type        = bool,
+                            optional    = True,
+                            default     = False)
         self.add_argument("-v", "--verbosity",
                             help        = "verbosity level for app",
                             dest        = 'verbosity',
@@ -152,6 +159,7 @@ class Dcm_tagSub(ChrisApp):
                         tagStruct           = options.tagStruct,
                         threads             = options.threads,
                         verbosity           = options.verbosity,
+                        followLinks         = options.followLinks,
                         json                = options.jsonReturn
                     )
 
