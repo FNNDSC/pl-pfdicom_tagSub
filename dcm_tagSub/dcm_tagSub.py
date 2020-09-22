@@ -1,11 +1,11 @@
 #                                                            _
-# dcm_tagSub ds app
+# dcm_tagSub DS app
 #
-# (c) 2016 Fetal-Neonatal Neuroimaging & Developmental Science Center
-#                   Boston Children's Hospital
+# (c) 2016-2020 Fetal-Neonatal Neuroimaging & Developmental Science Center
+#                      Boston Children's Hospital
 #
-#              http://childrenshospital.org/FNNDSC/
-#                        dev@babyMRI.org
+#                  http://childrenshospital.org/FNNDSC/
+#                            dev@babyMRI.org
 #
 
 import os
@@ -32,7 +32,7 @@ class Dcm_tagSub(ChrisApp):
     TYPE                    = 'ds'
     DESCRIPTION             = 'This plugin wraps around pfdicom_tagSub and is used to edit the contents of user-specified DICOM tags.'
     DOCUMENTATION           = 'https://github.com/FNNDSC/pl-pfdicom_tagSub'
-    VERSION                 = '1.0.4'
+    VERSION                 = '2.0.0'
     ICON                    = '' # url of an icon image
     LICENSE                 = 'Opensource (MIT)'
     MAX_NUMBER_OF_WORKERS   = 1  # Override with integer value
@@ -102,13 +102,6 @@ class Dcm_tagSub(ChrisApp):
                             type        = str,
                             optional    = True,
                             default     = "")
-        self.add_argument("-x", "--man",
-                            help        = "man",
-                            dest        = 'man',
-                            action      = 'store_true',
-                            type        = bool,
-                            optional    = True,
-                            default     = False)
         self.add_argument("-y", "--synopsis",
                             help        = "short synopsis",
                             dest        = 'synopsis',
@@ -126,19 +119,6 @@ class Dcm_tagSub(ChrisApp):
         self.add_argument("--followLinks",
                             help        = "follow symbolic links",
                             dest        = 'followLinks',
-                            action      = 'store_true',
-                            type        = bool,
-                            optional    = True,
-                            default     = False)
-        self.add_argument("-v", "--verbosity",
-                            help        = "verbosity level for app",
-                            dest        = 'verbosity',
-                            type        = str,
-                            optional    = True,
-                            default     = "1")
-        self.add_argument('--version',
-                            help        = 'if specified, print version number',
-                            dest        = 'b_version',
                             action      = 'store_true',
                             type        = bool,
                             optional    = True,
