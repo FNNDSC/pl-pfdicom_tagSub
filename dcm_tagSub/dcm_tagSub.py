@@ -143,7 +143,7 @@ class Dcm_tagSub(ChrisApp):
                         json                = options.jsonReturn
                     )
 
-        if options.b_version:
+        if options.version:
             print('Plugin Version: %s' % Dcm_tagSub.VERSION)
             print('Internal pfdicom_tagSub Version: %s' % pf_dicom_tagSub.str_version)
             sys.exit(0)
