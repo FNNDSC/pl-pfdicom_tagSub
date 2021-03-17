@@ -9,6 +9,8 @@
 #
 
 import os
+import re
+import json
 
 # import the Chris app superclass
 from chrisapp.base import ChrisApp
@@ -32,7 +34,7 @@ class Dcm_tagSub(ChrisApp):
     TYPE                    = 'ds'
     DESCRIPTION             = 'This plugin wraps around pfdicom_tagSub and is used to edit the contents of user-specified DICOM tags.'
     DOCUMENTATION           = 'https://github.com/FNNDSC/pl-pfdicom_tagSub'
-    VERSION                 = '2.0.0'
+    VERSION                 = '2.0.2'
     ICON                    = '' # url of an icon image
     LICENSE                 = 'Opensource (MIT)'
     MAX_NUMBER_OF_WORKERS   = 1  # Override with integer value
@@ -74,6 +76,12 @@ class Dcm_tagSub(ChrisApp):
         self.add_argument("-T", "--tagStruct",
                             help        = "JSON formatted tag sub struct",
                             dest        = 'tagStruct',
+                            type        = str,
+                            optional    = True,
+                            default     = '')
+        self.add_argument("-I", "--tagInfo",
+                            help        = "Semicolon-delimited tag sub struct",
+                            dest        = 'tagInfo',
                             type        = str,
                             optional    = True,
                             default     = '')
@@ -124,6 +132,19 @@ class Dcm_tagSub(ChrisApp):
                             optional    = True,
                             default     = False)
 
+    @staticmethod
+    def tag_info_to_struct(tagInfo):
+        fields = re.findall(r'(?:^|;\s*)"(.*?)"\s*:\s*"(.*?)"', tagInfo.strip())
+        return json.dumps(dict(fields))
+
+    def get_tag_struct(self):
+        if self.options.tagStruct and self.options.tagInfo:
+            msg = " Must give either tagStruct or tagInfo, not both."
+            raise ValueError(msg)
+        if self.options.tagInfo:
+            return self.tag_info_to_struct(self.options.tagInfo)
+        return self.options.tagStruct
+
     def run(self, options):
         """
         Define the code to be run by this plugin app.
@@ -136,7 +157,7 @@ class Dcm_tagSub(ChrisApp):
                         outputFileStem      = options.outputFileStem,
                         outputLeafDir       = options.outputLeafDir,
                         tagFile             = options.tagFile,
-                        tagStruct           = options.tagStruct,
+                        tagStruct           = self.get_tag_struct(),
                         threads             = options.threads,
                         verbosity           = options.verbosity,
                         followLinks         = options.followLinks,
