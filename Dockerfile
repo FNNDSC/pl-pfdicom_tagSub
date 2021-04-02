@@ -1,4 +1,4 @@
-# Docker file for the dcm_tagExtract plugin app
+# Docker file for pfdicom_tagsub ChRIS plugin app
 #
 # Build with
 #
@@ -6,43 +6,30 @@
 #
 # For example if building a local version, you could do:
 #
-#   docker build -t local/pl-pfdicom_tagsub .
+#   docker build -t local/pl-pfdicom_tagSub .
 #
-# In the case of a proxy (located at say 10.41.13.4:3128), do:
+# In the case of a proxy (located at 192.168.13.14:3128), do:
 #
-#    export PROXY="http://10.41.13.4:3128"
-#    docker build --build-arg http_proxy=${PROXY} --build-arg UID=$UID -t local/pl-pfdicom_tagsub .
+#    docker build --build-arg http_proxy=http://192.168.13.14:3128 --build-arg UID=$UID -t local/pl-pfdicom_tagSub .
 #
 # To run an interactive shell inside this container, do:
 #
-#   docker run -ti --entrypoint /bin/bash local/pl-pfdicom_tagsub
+#   docker run -ti --entrypoint /bin/bash local/pl-pfdicom_tagSub
+#
+# To pass an env var HOST_IP to container, do:
+#
+#   docker run -ti -e HOST_IP=$(ip route | grep -v docker | awk '{if(NF==11) print $9}') --entrypoint /bin/bash local/pl-pfdicom_tagSub
 #
 
+FROM python:3.9.1-slim-buster
+LABEL maintainer="Sandip Samal <sandip.samal@childrens.harvard.edu>"
 
-FROM fnndsc/ubuntu-python3:latest
-LABEL maintainer="dev@babymri.org"
+WORKDIR /usr/local/src
 
-ENV APPROOT="/usr/src/dcm_tagSub"  VERSION="0.1"
-COPY ["dcm_tagSub", "${APPROOT}"]
-COPY ["requirements.txt", "${APPROOT}"]
+COPY requirements.txt .
+RUN pip install -r requirements.txt
 
-WORKDIR $APPROOT
+COPY . .
+RUN pip install .
 
-# Pass a UID on build command line (see above) to set internal UID
-ARG UID=1001
-ENV UID=$UID
-
-RUN apt-get update                                                      \
-  && apt-get install sudo                                               \
-  && useradd -u $UID -ms /bin/bash localuser                            \
-  && addgroup localuser sudo                                            \
-  && echo "localuser:localuser" | chpasswd                              \
-  && adduser localuser sudo                                             \
-  && apt-get install -y libmysqlclient-dev                              \
-  && apt-get install -y libssl-dev libcurl4-openssl-dev                 \
-  && apt-get install -y bsdmainutils vim net-tools inetutils-ping       \
-  && apt-get install -y python3-tk                                      \
-  && pip install --upgrade pip                                          \
-  && pip install -r requirements.txt
-
-CMD ["dcm_tagSub.py", "--help"]
+CMD ["dcm_tagSub", "--help"]

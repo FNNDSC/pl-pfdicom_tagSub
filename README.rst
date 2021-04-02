@@ -1,59 +1,112 @@
-################################
 pl-pfdicom_tagSub
-################################
+================================
+
+.. image:: https://img.shields.io/docker/v/fnndsc/pl-pfdicom_tagSub?sort=semver
+    :target: https://hub.docker.com/r/fnndsc/pl-pfdicom_tagSub
+
+.. image:: https://img.shields.io/github/license/fnndsc/pl-pfdicom_tagSub
+    :target: https://github.com/FNNDSC/pl-pfdicom_tagSub/blob/master/LICENSE
+
+.. image:: https://github.com/FNNDSC/pl-pfdicom_tagSub/workflows/ci/badge.svg
+    :target: https://github.com/FNNDSC/pl-pfdicom_tagSub/actions
+
+
+.. contents:: Table of Contents
+
 
 Abstract
-********
+--------
 
-This app performs a recursive walk down an input tree, and for each DICOM file (as filtered with a ``-e .dcm``), will 
-perform an edit or substitution on a pattern of user specified DICOM tags. Resultant edited files are saved in the  corresponding location in the output tree. This page is not the canonical reference for ``pfdicom_tagSub`` on which this plugin is based. Please see https://github.com/FNNDSC/pfdicom_tagSub for detail about the actual tag substitution process and the pattern of command line flags. 
+This plugin wraps around pfdicom_tagSub and is used to edit the contents of user-specified DICOM tags.
 
-Note that the only different between this plugin and the reference ``pfdicom_tagSub`` is that the reference has explicit flags for ``inputDir`` and ``outputDir`` while this plugin uses positional arguments for the same.
+
+Description
+-----------
+
+``pfdicom_tagsub`` is a ChRIS-based application that...
+
+
+Usage
+-----
+
+.. code::
+
+    python pfdicom_tagsub.py
+        [-h|--help]
+        [--json] [--man] [--meta]
+        [--savejson <DIR>]
+        [-v|--verbosity <level>]
+        [--version]
+        <inputDir> <outputDir>
+
+
+Arguments
+~~~~~~~~~
+
+.. code::
+
+    [-h] [--help]
+    If specified, show help message and exit.
+    
+    [--json]
+    If specified, show json representation of app and exit.
+    
+    [--man]
+    If specified, print (this) man page and exit.
+
+    [--meta]
+    If specified, print plugin meta data and exit.
+    
+    [--savejson <DIR>] 
+    If specified, save json representation file to DIR and exit. 
+    
+    [-v <level>] [--verbosity <level>]
+    Verbosity level for app. Not used currently.
+    
+    [--version]
+    If specified, print version number and exit. 
+
+
+Getting inline help is:
+
+.. code:: bash
+
+    docker run --rm fnndsc/pl-pfdicom_tagSub pfdicom_tagsub --man
 
 Run
-***
+~~~
 
-Using ``docker run``
-====================
+You need to specify input and output directories using the `-v` flag to `docker run`.
 
-.. code-block:: bash
 
-    docker run -it --rm -v $(pwd)/in:/incoming -v $(pwd)/out:/outgoing  \
-            fnndsc/pl-pfdicom_tagsub dcm_tagSub.py                      \
-            --tagStruct '
-            {
-                "PatientName":       "anonymized",
-                "PatientID":         "%_md5|7_PatientID",
-                "AccessionNumber":   "%_md5|10_AccessionNumber",
-                "PatientBirthDate":  "%_strmsk|******01_PatientBirthDate"
-            }
-            ' --threads 0 -v 2 -e .dcm                                  \
-            /incoming /outgoing
+.. code:: bash
 
-Assuming that ``$(pwd)/in`` contains a tree of DICOM files, then the above will generate, for each leaf directory node in ``$(pwd)/in`` that contains files satisfying the search constraint of ending in ``.dcm``, new DICOM files with the above tag subsitutions: The ``PatientName`` is set to ``anonymized``, the ``PatientID`` is replaced with the first seven chars of an ``md5`` hash of the original ``PatientID`` -- similarly for the ``AssessionNumber``. Finally the ``PatientBirthDate`` is masked so that the birthday is set to the first of the month.
+    docker run --rm -u $(id -u)                             \
+        -v $(pwd)/in:/incoming -v $(pwd)/out:/outgoing      \
+        fnndsc/pl-pfdicom_tagSub pfdicom_tagsub                        \
+        /incoming /outgoing
 
-Debug
-*****
 
-Invariably, some debugging will be required. In order to debug efficiently, map the following into their respective locations in the container:
+Development
+-----------
 
-.. code-block:: bash
+Build the Docker container:
 
-    docker run -it --rm -v $(pwd)/in:/incoming -v $(pwd)/out:/outgoing      \
-            -v $(pwd)/dcm_tagSub/dcm_tagSub.py:/usr/src/dcm_tagSub/dcm_tagSub.py  \
-            -v $(pwd)/dcm_tagSub/pfdicom_tagSub.py:/usr/local/lib/python3.5/dist-packages/pfdicom_tagSub/pfdicom_tagSub.py \
-            fnndsc/pl-pfdicom_tagsub dcm_tagSub.py                          \
-            --tagStruct '
-            {
-                "PatientName":       "anonymized",
-                "PatientID":         "%_md5|7_PatientID",
-                "AccessionNumber":   "%_md5|10_AccessionNumber",
-                "PatientBirthDate":  "%_strmsk|******01_PatientBirthDate"
-            }
-            ' --threads 0 -v 2 -e .dcm                                      \
-            /incoming /outgoing
+.. code:: bash
 
-This assumes that the source code the underlying ``pfdicom_tagSub.py`` module is accessible as shown.
+    docker build -t local/pl-pfdicom_tagSub .
 
-Make sure that the host ``$(pwd)/out`` directory is world writable!
+Run unit tests:
 
+.. code:: bash
+
+    docker run --rm local/pl-pfdicom_tagSub nosetests
+
+Examples
+--------
+
+Put some examples here!
+
+
+.. image:: https://raw.githubusercontent.com/FNNDSC/cookiecutter-chrisapp/master/doc/assets/badge/light.png
+    :target: https://chrisstore.co
