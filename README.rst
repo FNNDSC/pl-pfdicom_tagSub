@@ -25,7 +25,7 @@ Note that the only different between this plugin and the reference pfdicom_tagSu
 Description
 -----------
 
-``pfdicom_tagsub`` is a ChRIS-based application that wraps around pfdicom_tagSub and is used to edit the contents of user-specified DICOM tags..
+``pl-pfdicom_tagsub`` is a ChRIS-based application that wraps around pfdicom_tagSub and is used to edit the contents of user-specified DICOM tags..
 
 
 Usage
