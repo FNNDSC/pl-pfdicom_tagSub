@@ -33,7 +33,7 @@ Usage
 
 .. code::
 
-    python pfdicom_tagsub.py
+    python dcm_tagSub.py
         [-h|--help]
         [--json] [--man] [--meta]
         [--savejson <DIR>]
@@ -119,7 +119,7 @@ Getting inline help is:
 
 .. code:: bash
 
-    docker run --rm fnndsc/pl-pfdicom_tagSub pfdicom_tagsub --man
+    docker run --rm fnndsc/pl-pfdicom_tagSub dcm_tagSub --man
 
 Run
 ~~~
@@ -131,7 +131,7 @@ You need to specify input and output directories using the `-v` flag to `docker 
 
     docker run --rm -u $(id -u)                             \
         -v $(pwd)/in:/incoming -v $(pwd)/out:/outgoing      \
-        fnndsc/pl-pfdicom_tagSub pfdicom_tagsub             \
+        fnndsc/pl-pfdicom_tagSub dcm_tagSub             \
         /incoming /outgoing
 
 
@@ -156,7 +156,7 @@ Examples
 .. code:: bash
 
     docker run -it --rm -v $(pwd)/in:/incoming -v $(pwd)/out:/outgoing  \
-        fnndsc/pl-pfdicom_tagsub dcm_tagSub.py                      \
+        fnndsc/pl-pfdicom_tagsub dcm_tagSub                             \
         --tagStruct '
         {
             "PatientName":       "anonymized",
