@@ -37,6 +37,13 @@ Usage
         [--savejson <DIR>]
         [-v|--verbosity <level>]
         [--version]
+        [-e|--extension <DICOMextension>]
+        [-O|--outputDir <outputDir>]
+        [-F|--tagFile <JSONtagFile>]
+        [-T|--tagStruct <JSONtagStructure>]
+        [-o|--outputFileStem <outputFileStem>]
+        [--outputLeafDir <outputLeafDirFormat>]
+        [--threads <numThreads>]
         <inputDir> <outputDir>
 
 
