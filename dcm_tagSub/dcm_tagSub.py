@@ -40,11 +40,11 @@ where necessary.)
 
     NAME
 
-       pfdicom_tagsub.py 
+       dcm_tagsub.py 
 
     SYNOPSIS
 
-        python pfdicom_tagsub.py                                         \\
+        python dcm_tagSub.py                                            \\
             [-h] [--help]                                               \\
             [--json]                                                    \\
             [--man]                                                     \\
