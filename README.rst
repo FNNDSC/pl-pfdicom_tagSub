@@ -155,7 +155,7 @@ Examples
 
 .. code:: bash
 
-docker run -it --rm -v $(pwd)/in:/incoming -v $(pwd)/out:/outgoing  \
+    docker run -it --rm -v $(pwd)/in:/incoming -v $(pwd)/out:/outgoing  \
         fnndsc/pl-pfdicom_tagsub dcm_tagSub.py                      \
         --tagStruct '
         {
