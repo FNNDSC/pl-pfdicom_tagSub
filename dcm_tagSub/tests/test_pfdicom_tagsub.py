@@ -17,8 +17,8 @@ class Pfdicom_tagsubTests(TestCase):
         """
         args = []
         if self.app.TYPE == 'ds':
-            args.append('inputdir') # you may want to change this inputdir mock
-        args.append('outputdir')  # you may want to change this outputdir mock
+            args.append('inputDir') # you may want to change this inputdir mock
+        args.append('outputDir')  # you may want to change this outputdir mock
 
         # you may want to add more of your custom defined optional arguments to test
         # your app with
