@@ -209,13 +209,13 @@ class Dcm_tagSub(ChrisApp):
         fields = re.findall(r'(?:^|;\s*)"(.*?)"\s*:\s*"(.*?)"', tagInfo.strip())
         return json.dumps(dict(fields))
 
-    def get_tag_struct(self):
-        if self.options.tagStruct and self.options.tagInfo:
+    def get_tag_struct(self, options):
+        if options.tagStruct and options.tagInfo:
             msg = " Must give either tagStruct or tagInfo, not both."
             raise ValueError(msg)
-        if self.options.tagInfo:
-            return self.tag_info_to_struct(self.options.tagInfo)
-        return self.options.tagStruct
+        if options.tagInfo:
+            return self.tag_info_to_struct(options.tagInfo)
+        return options.tagStruct
 
     def run(self, options):
         """
