@@ -232,7 +232,7 @@ class Dcm_tagSub(ChrisApp):
                         outputFileStem      = options.outputFileStem,
                         outputLeafDir       = options.outputLeafDir,
                         tagFile             = options.tagFile,
-                        tagStruct           = self.get_tag_struct(),
+                        tagStruct           = self.get_tag_struct(options),
                         threads             = options.threads,
                         verbosity           = options.verbosity,
                         followLinks         = options.followLinks,
