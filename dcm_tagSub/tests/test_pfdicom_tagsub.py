@@ -9,7 +9,7 @@ class Pfdicom_tagsubTests(TestCase):
     Test Pfdicom_tagsub.
     """
     def setUp(self):
-        self.app = Pfdicom_tagsub()
+        self.app = Dcm_tagSub()
 
     def test_run(self):
         """
