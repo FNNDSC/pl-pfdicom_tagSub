@@ -1,7 +1,7 @@
 
 from unittest import TestCase
 from unittest import mock
-from pfdicom_tagSub.pfdicom_tagSub import Pfdicom_tagsub
+from dcm_tagSub.dcm_tagSub import Dcm_tagsub
 
 
 class Pfdicom_tagsubTests(TestCase):
