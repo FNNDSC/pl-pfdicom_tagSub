@@ -17,13 +17,15 @@ pl-pfdicom_tagSub
 Abstract
 --------
 
-This plugin wraps around pfdicom_tagSub and is used to edit the contents of user-specified DICOM tags.
+This app performs a recursive walk down an input tree, and for each DICOM file (as filtered with a -e .dcm), will perform an edit or substitution on a pattern of user specified DICOM tags. Resultant edited files are saved in the corresponding location in the output tree. This page is not the canonical reference for pfdicom_tagSub on which this plugin is based. Please see https://github.com/FNNDSC/pfdicom_tagSub for detail about the actual tag substitution process and the pattern of command line flags.
+
+Note that the only different between this plugin and the reference pfdicom_tagSub is that the reference has explicit flags for inputDir and outputDir while this plugin uses positional arguments for the same.
 
 
 Description
 -----------
 
-``pfdicom_tagsub`` is a ChRIS-based application that...
+``pl-pfdicom_tagsub`` is a ChRIS-based application that wraps around pfdicom_tagSub and is used to edit the contents of user-specified DICOM tags..
 
 
 Usage
@@ -31,12 +33,19 @@ Usage
 
 .. code::
 
-    python pfdicom_tagsub.py
+    python dcm_tagSub.py
         [-h|--help]
         [--json] [--man] [--meta]
         [--savejson <DIR>]
         [-v|--verbosity <level>]
         [--version]
+        [-e|--extension <DICOMextension>]
+        [-O|--outputDir <outputDir>]
+        [-F|--tagFile <JSONtagFile>]
+        [-T|--tagStruct <JSONtagStructure>]
+        [-o|--outputFileStem <outputFileStem>]
+        [--outputLeafDir <outputLeafDirFormat>]
+        [--threads <numThreads>]
         <inputDir> <outputDir>
 
 
@@ -110,7 +119,7 @@ Getting inline help is:
 
 .. code:: bash
 
-    docker run --rm fnndsc/pl-pfdicom_tagSub pfdicom_tagsub --man
+    docker run --rm fnndsc/pl-pfdicom_tagSub dcm_tagSub --man
 
 Run
 ~~~
@@ -122,7 +131,7 @@ You need to specify input and output directories using the `-v` flag to `docker 
 
     docker run --rm -u $(id -u)                             \
         -v $(pwd)/in:/incoming -v $(pwd)/out:/outgoing      \
-        fnndsc/pl-pfdicom_tagSub pfdicom_tagsub                        \
+        fnndsc/pl-pfdicom_tagSub dcm_tagSub             \
         /incoming /outgoing
 
 
@@ -144,7 +153,20 @@ Run unit tests:
 Examples
 --------
 
-Put some examples here!
+.. code:: bash
+
+    docker run -it --rm -v $(pwd)/in:/incoming -v $(pwd)/out:/outgoing  \
+        fnndsc/pl-pfdicom_tagsub dcm_tagSub                             \
+        --tagStruct '
+        {
+            "PatientName":       "anonymized",
+            "PatientID":         "%_md5|7_PatientID",
+            "AccessionNumber":   "%_md5|10_AccessionNumber",
+            "PatientBirthDate":  "%_strmsk|******01_PatientBirthDate"
+        }
+        ' --threads 0 -v 2 -e .dcm                                  \
+        /incoming /outgoing
+
 
 
 .. image:: https://raw.githubusercontent.com/FNNDSC/cookiecutter-chrisapp/master/doc/assets/badge/light.png
