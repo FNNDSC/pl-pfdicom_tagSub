@@ -43,6 +43,7 @@ Usage
         [-O|--outputDir <outputDir>]
         [-F|--tagFile <JSONtagFile>]
         [-T|--tagStruct <JSONtagStructure>]
+        [-I|--tagInfo <delimited_parameters>]
         [-o|--outputFileStem <outputFileStem>]
         [--outputLeafDir <outputLeafDirFormat>]
         [--threads <numThreads>]
@@ -90,6 +91,10 @@ Arguments
     [-T|--tagStruct <JSONtagStructure>]
     Parse the tags and their "subs" from a JSON formatted <JSONtagStucture>
     passed directly in the command line.
+    
+    [-I|--tagInfo <delimited_parameters>]
+    A '++' delimited tag structure that saves you from the complexity
+    of creating a well formed JSON structure
 
     [-o|--outputFileStem <outputFileStem>]
     The output file stem to store data. This should *not* have a file
@@ -159,10 +164,13 @@ Examples
         fnndsc/pl-pfdicom_tagsub dcm_tagSub                             \
         --tagStruct '
         {
-            "PatientName":       "anonymized",
-            "PatientID":         "%_md5|7_PatientID",
-            "AccessionNumber":   "%_md5|10_AccessionNumber",
-            "PatientBirthDate":  "%_strmsk|******01_PatientBirthDate"
+            "PatientName":              "%_name|patientID_PatientName",
+            "PatientID":                "%_md5|7_PatientID",
+            "AccessionNumber":          "%_md5|8_AccessionNumber",
+            "PatientBirthDate":         "%_strmsk|******01_PatientBirthDate",
+            "re:.*hysician":            "%_md5|4_#tag",
+            "re:.*stitution":           "#tag",
+            "re:.*ddress":              "#tag"
         }
         ' --threads 0 -v 2 -e .dcm                                  \
         /incoming /outgoing

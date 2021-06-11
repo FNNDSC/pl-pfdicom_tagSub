@@ -55,6 +55,7 @@ where necessary.)
             [-O|--outputDir <outputDir>]                                \\
             [-F|--tagFile <JSONtagFile>]                                \\
             [-T|--tagStruct <JSONtagStructure>]                         \\
+            [-I|--tagInfo <delimited_parameters>]                       \\
             [-o|--outputFileStem <outputFileStem>]                      \\
             [--outputLeafDir <outputLeafDirFormat>]                     \\
             [--threads <numThreads>]                                    \\
@@ -113,6 +114,10 @@ where necessary.)
     	[-T|--tagStruct <JSONtagStructure>]
     	Parse the tags and their "subs" from a JSON formatted <JSONtagStucture>
     	passed directly in the command line.
+    	
+    	[-I|--tagInfo <delimited_parameters>]
+    	A '++' delimited tag structure that saves you from the complexity
+    	of creating a well formed JSON structure
 
     	[-o|--outputFileStem <outputFileStem>]
     	The output file stem to store data. This should *not* have a file
@@ -252,8 +257,13 @@ class Dcm_tagSub(ChrisApp):
 
     @staticmethod
     def tag_info_to_struct(tagInfo):
-        fields = re.findall(r'(?:^|;\s*)"(.*?)"\s*:\s*"(.*?)"', tagInfo.strip())
-        return json.dumps(dict(fields))
+        l_s = tagInfo.split('++')
+        d ={}
+        for f in l_s:
+            ss = f.split(':')
+            d[ss[0]] = ss[1]
+            
+        return json.dumps(dict(d))
 
     def get_tag_struct(self, options):
         if options.tagStruct and options.tagInfo:
