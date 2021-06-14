@@ -56,6 +56,7 @@ where necessary.)
             [-F|--tagFile <JSONtagFile>]                                \\
             [-T|--tagStruct <JSONtagStructure>]                         \\
             [-I|--tagInfo <delimited_parameters>]                       \\
+            [-s|--splitToken <split_token>]                             \\
             [-o|--outputFileStem <outputFileStem>]                      \\
             [--outputLeafDir <outputLeafDirFormat>]                     \\
             [--threads <numThreads>]                                    \\
@@ -116,8 +117,12 @@ where necessary.)
     	passed directly in the command line.
     	
     	[-I|--tagInfo <delimited_parameters>]
-    	A '++' delimited tag structure that saves you from the complexity
+    	A token delimited tag structure that saves you from the complexity
     	of creating a well formed JSON structure
+    	
+        [-s|--splitToken <split_token>]
+        The token on which to split the <delimited_parameters> string.
+        Default is '++'.                             
 
     	[-o|--outputFileStem <outputFileStem>]
     	The output file stem to store data. This should *not* have a file
@@ -203,11 +208,17 @@ class Dcm_tagSub(ChrisApp):
                             optional    = True,
                             default     = '')
         self.add_argument("-I", "--tagInfo",
-                            help        = "Semicolon-delimited tag sub struct",
+                            help        = "A custom delimited tag sub struct",
                             dest        = 'tagInfo',
                             type        = str,
                             optional    = True,
                             default     = '')
+        self.add_argument("-s","--splitToken",
+                            help        = "Expression on which to split the <delimited_tag_info>",
+                            type        = str,
+                            dest        = 'splitToken',
+                            optional    = True,
+                            default     = "++")
         self.add_argument("-o", "--outputFileStem",
                             help        = "output file",
                             default     = "",
@@ -256,12 +267,15 @@ class Dcm_tagSub(ChrisApp):
                             default     = False)
 
     @staticmethod
-    def tag_info_to_struct(tagInfo):
-        l_s = tagInfo.split('++')
+    def tag_info_to_struct(token,tagInfo):
+        l_s = tagInfo.split(token)
         d ={}
-        for f in l_s:
-            ss = f.split(':')
-            d[ss[0]] = ss[1]
+        try:
+            for f in l_s:
+                ss = f.split(':')
+                d[ss[0]] = ss[1]
+        except:
+            print ('Incorrect tag info specified')
             
         return json.dumps(dict(d))
 
@@ -270,7 +284,7 @@ class Dcm_tagSub(ChrisApp):
             msg = " Must give either tagStruct or tagInfo, not both."
             raise ValueError(msg)
         if options.tagInfo:
-            return self.tag_info_to_struct(options.tagInfo)
+            return self.tag_info_to_struct(options.splitToken,options.tagInfo)
         return options.tagStruct
 
     def run(self, options):
