@@ -44,6 +44,7 @@ Usage
         [-F|--tagFile <JSONtagFile>]
         [-T|--tagStruct <JSONtagStructure>]
         [-I|--tagInfo <delimited_parameters>]
+        [-s|--splitToken <split_token>]             
         [-o|--outputFileStem <outputFileStem>]
         [--outputLeafDir <outputLeafDirFormat>]
         [--threads <numThreads>]
@@ -95,6 +96,10 @@ Arguments
     [-I|--tagInfo <delimited_parameters>]
     A '++' delimited tag structure that saves you from the complexity
     of creating a well formed JSON structure
+    
+    [-s|--splitToken <split_token>]
+    The token on which to split the <delimited_parameters> string.
+    Default is '++'.
 
     [-o|--outputFileStem <outputFileStem>]
     The output file stem to store data. This should *not* have a file
