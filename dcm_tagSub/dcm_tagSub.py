@@ -32,11 +32,6 @@ Gstr_title = r"""
 
 Gstr_synopsis = """
 
-(Edit this in-line help for app specifics. At a minimum, the 
-flags below are supported -- in the case of DS apps, both
-positional arguments <inputDir> and <outputDir>; for FS and TS apps
-only <outputDir> -- and similarly for <in> <out> directories
-where necessary.)
 
     NAME
 
@@ -66,16 +61,29 @@ where necessary.)
 
     BRIEF EXAMPLE
 
-        * Bare bones execution
-
-            docker run --rm -u $(id -u)                             \
-                -v $(pwd)/in:/incoming -v $(pwd)/out:/outgoing      \
-                fnndsc/pl-pfdicom_tagSub dcm_tagSub                 \
-                /incoming /outgoing
+        docker run -it --rm -v $(pwd)/in:/incoming -v $(pwd)/out:/outgoing  \
+        fnndsc/pl-pfdicom_tagsub dcm_tagSub                                 \
+        --tagStruct '
+        {
+            "PatientName":              "%_name|patientID_PatientName",
+            "PatientID":                "%_md5|7_PatientID",
+            "AccessionNumber":          "%_md5|8_AccessionNumber",
+            "PatientBirthDate":         "%_strmsk|******01_PatientBirthDate",
+            "re:.*hysician":            "%_md5|4_#tag",
+            "re:.*stitution":           "#tag",
+            "re:.*ddress":              "#tag"
+        }
+        ' --threads 0 -v 2 -e .dcm                                           \
+        /incoming /outgoing
 
     DESCRIPTION
 
-        `pfdicom_tagsub.py` ...
+        'dcm_tagSub' is a customizable and friendly DICOM tag substitutor.
+        As part of the "pf*" suite of applications, it is geared to IO as
+        directories. Input DICOM trees are reconstructed in an output
+        directory, preserving directory structure. Each node tree contains
+        a copy of the original DICOM with a user-specified tag list changed
+        in the output.
 
     ARGS
 
@@ -266,26 +274,6 @@ class Dcm_tagSub(ChrisApp):
                             optional    = True,
                             default     = False)
 
-    @staticmethod
-    def tag_info_to_struct(token,tagInfo):
-        l_s = tagInfo.split(token)
-        d ={}
-        try:
-            for f in l_s:
-                ss = f.split(':')
-                d[ss[0]] = ss[1]
-        except:
-            print ('Incorrect tag info specified')
-            
-        return json.dumps(dict(d))
-
-    def get_tag_struct(self, options):
-        if options.tagStruct and options.tagInfo:
-            msg = " Must give either tagStruct or tagInfo, not both."
-            raise ValueError(msg)
-        if options.tagInfo:
-            return self.tag_info_to_struct(options.splitToken,options.tagInfo)
-        return options.tagStruct
 
     def run(self, options):
         """
@@ -302,7 +290,9 @@ class Dcm_tagSub(ChrisApp):
                         outputFileStem      = options.outputFileStem,
                         outputLeafDir       = options.outputLeafDir,
                         tagFile             = options.tagFile,
-                        tagStruct           = self.get_tag_struct(options),
+                        tagStruct           = options.tagStruct,
+                        splitToken          = options.splitToken,
+                        tagInfo             = options.tagInfo,
                         threads             = options.threads,
                         verbosity           = options.verbosity,
                         followLinks         = options.followLinks,
