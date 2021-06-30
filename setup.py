@@ -6,7 +6,7 @@ with open(path.join(path.dirname(path.abspath(__file__)), 'README.rst')) as f:
 
 setup(
     name             = 'dcm_tagSub',
-    version          = '3.2.1',
+    version          = '3.2.2',
     description      = 'This plugin wraps around pfdicom_tagSub and is used to edit the contents of user-specified DICOM tags.',
     long_description = readme,
     author           = 'Sandip Samal',
