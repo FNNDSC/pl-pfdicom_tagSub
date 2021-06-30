@@ -91,7 +91,8 @@ Gstr_synopsis = """
                 re:.*hysician       =  %_md5|4_#tag,
                 re:.*stitution      =  #tag,
                 re:.*ddress         =  #tag
-            ' --threads 0 --printElapsedTime
+            ' --threads 0 --printElapsedTime                                \\
+             /incoming /outgoing
             
         will replace the explicitly named tags as shown:
         * the ``PatientName`` value will be replaced with a Fake Name,

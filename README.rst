@@ -222,7 +222,8 @@ Examples
                 re:.*hysician       =  %_md5|4_#tag,
                 re:.*stitution      =  #tag,
                 re:.*ddress         =  #tag
-            ' --threads 0 --printElapsedTime
-
+            ' --threads 0 --printElapsedTime                            \
+            /incoming /outgoing
+            
 .. image:: https://raw.githubusercontent.com/FNNDSC/cookiecutter-chrisapp/master/doc/assets/badge/light.png
     :target: https://chrisstore.co
