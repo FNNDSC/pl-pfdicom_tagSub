@@ -43,8 +43,9 @@ Usage
         [-O|--outputDir <outputDir>]
         [-F|--tagFile <JSONtagFile>]
         [-T|--tagStruct <JSONtagStructure>]
-        [-I|--tagInfo <delimited_parameters>]
-        [-s|--splitToken <split_token>]             
+        [-n|--tagInfo <delimited_parameters>]
+        [-s|--splitToken <split_token>]
+        [-k|--splitKey <keySplit>]             
         [-o|--outputFileStem <outputFileStem>]
         [--outputLeafDir <outputLeafDirFormat>]
         [--threads <numThreads>]
@@ -88,18 +89,44 @@ Arguments
 
     [-F|--tagFile <JSONtagFile>]
     Parse the tags and their "subs" from a JSON formatted <JSONtagFile>.
-
+    
     [-T|--tagStruct <JSONtagStructure>]
     Parse the tags and their "subs" from a JSON formatted <JSONtagStucture>
-    passed directly in the command line.
-    
-    [-I|--tagInfo <delimited_parameters>]
-    A '++' delimited tag structure that saves you from the complexity
-    of creating a well formed JSON structure
-    
+    string passed directly in the command line. Note that sometimes protecting
+    a JSON string can be tricky, especially when used in scripts or as variable
+    expansions. If the JSON string is problematic, use the [--tagInfo <string>]
+    instead.
+
+    [-n|--tagInfo <delimited_parameters>]
+    A token delimited string that is reconstructed into a JSON structure by the
+    script. This is often useful if the [--tagStruict] JSON string is hard to
+    parse in scripts and variable passing within scripts. The format of this
+    string is:
+
+             "<tag1><splitKeyValue><value1><split_token><tag2><splitKeyValue><value2>"
+
+    for example:
+
+            --splitToken ","
+            --splitKeyValue ':'
+            --tagInfo "PatientName:anon,PatientID:%_md5|7_PatientID"
+
+    or more complexly (esp if the ':' is part of the key):
+
+            --splitToken "++"
+            --splitKeyValue "="
+            --tagInfo "PatientBirthDate = %_strmsk|******01_PatientBirthDate ++
+                       re:.*hysician"   = %_md5|4_#tag"
+
+
     [-s|--splitToken <split_token>]
     The token on which to split the <delimited_parameters> string.
     Default is '++'.
+
+    [-k|--splitKeyValue <keyValueSplit>]
+    The token on which to split the <key> <value> pair. Default is ':'
+    but this can be problematic if the <key> itself has a ':' (for example
+    in the regular expression expansion).
 
     [-o|--outputFileStem <outputFileStem>]
     The output file stem to store data. This should *not* have a file
