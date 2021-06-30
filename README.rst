@@ -209,8 +209,6 @@ Examples
 
  -- OR equivalently --
  
- .. code:: bash
- 
     docker run -it --rm -v $(pwd)/in:/incoming -v $(pwd)/out:/outgoing  \
         fnndsc/pl-pfdicom_tagsub dcm_tagSub                             \
             -e dcm                                                      \
