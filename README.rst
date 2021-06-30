@@ -211,13 +211,11 @@ Examples
  
  .. code:: bash
  
-        docker run -it --rm -v $(pwd)/in:/incoming -v $(pwd)/out:/outgoing  \
-        fnndsc/pl-pfdicom_tagsub dcm_tagSub                                 \
-            -e dcm                                                          \
-            -I /var/www/html/normsmall                                      \
-            -O /var/www/html/anon                                           \
-            --splitToken ","                                                \
-            --splitKeyValue "="                                             \
+    docker run -it --rm -v $(pwd)/in:/incoming -v $(pwd)/out:/outgoing  \
+        fnndsc/pl-pfdicom_tagsub dcm_tagSub                             \
+            -e dcm                                                      \
+            --splitToken ","                                            \
+            --splitKeyValue "="                                         \
             --tagInfo '
                 PatientName         =  %_name|patientID_PatientName,
                 PatientID           =  %_md5|7_PatientID,

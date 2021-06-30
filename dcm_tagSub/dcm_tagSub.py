@@ -81,8 +81,6 @@ Gstr_synopsis = """
         docker run -it --rm -v $(pwd)/in:/incoming -v $(pwd)/out:/outgoing  \\
         fnndsc/pl-pfdicom_tagsub dcm_tagSub                                 \\
             -e dcm                                                          \\
-            -I /var/www/html/normsmall                                      \\
-            -O /var/www/html/anon                                           \\
             --splitToken ","                                                \\
             --splitKeyValue "="                                             \\
             --tagInfo '
