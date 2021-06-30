@@ -45,7 +45,7 @@ Usage
         [-T|--tagStruct <JSONtagStructure>]
         [-n|--tagInfo <delimited_parameters>]
         [-s|--splitToken <split_token>]
-        [-k|--splitKey <keySplit>]             
+        [-k|--splitKeyValue <keySplit>]             
         [-o|--outputFileStem <outputFileStem>]
         [--outputLeafDir <outputLeafDirFormat>]
         [--threads <numThreads>]
@@ -207,7 +207,26 @@ Examples
         ' --threads 0 -v 2 -e .dcm                                  \
         /incoming /outgoing
 
-
+ -- OR equivalently --
+ 
+ .. code:: bash
+ 
+        docker run -it --rm -v $(pwd)/in:/incoming -v $(pwd)/out:/outgoing  \
+        fnndsc/pl-pfdicom_tagsub dcm_tagSub                                 \
+            -e dcm                                                          \
+            -I /var/www/html/normsmall                                      \
+            -O /var/www/html/anon                                           \
+            --splitToken ","                                                \
+            --splitKeyValue "="                                             \
+            --tagInfo '
+                PatientName         =  %_name|patientID_PatientName,
+                PatientID           =  %_md5|7_PatientID,
+                AccessionNumber     =  %_md5|8_AccessionNumber,
+                PatientBirthDate    =  %_strmsk|******01_PatientBirthDate,
+                re:.*hysician       =  %_md5|4_#tag,
+                re:.*stitution      =  #tag,
+                re:.*ddress         =  #tag
+            ' --threads 0 --printElapsedTime
 
 .. image:: https://raw.githubusercontent.com/FNNDSC/cookiecutter-chrisapp/master/doc/assets/badge/light.png
     :target: https://chrisstore.co

@@ -51,7 +51,8 @@ Gstr_synopsis = """
             [-F|--tagFile <JSONtagFile>]                                \\
             [-T|--tagStruct <JSONtagStructure>]                         \\
             [-n|--tagInfo <delimited_parameters>]                       \\
-            [-s|--splitToken <split_token>] [-k|--splitKey <keySplit>]  \\
+            [-s|--splitToken <split_token>]                             \\
+            [-k|--splitKeyValue <keySplit>]                             \\
             [-o|--outputFileStem <outputFileStem>]                      \\
             [--outputLeafDir <outputLeafDirFormat>]                     \\
             [--threads <numThreads>]                                    \\
@@ -77,12 +78,13 @@ Gstr_synopsis = """
         /incoming /outgoing
         
          -- OR equivalently --
-        pfdicom_tagSub                                      \\
-            -e dcm                                          \\
-            -I /var/www/html/normsmall                      \\
-            -O /var/www/html/anon                           \\
-            --splitToken ","                                \\
-            --splitKeyValue "="                             \\
+        docker run -it --rm -v $(pwd)/in:/incoming -v $(pwd)/out:/outgoing  \\
+        fnndsc/pl-pfdicom_tagsub dcm_tagSub                                 \\
+            -e dcm                                                          \\
+            -I /var/www/html/normsmall                                      \\
+            -O /var/www/html/anon                                           \\
+            --splitToken ","                                                \\
+            --splitKeyValue "="                                             \\
             --tagInfo '
                 PatientName         =  %_name|patientID_PatientName,
                 PatientID           =  %_md5|7_PatientID,
@@ -92,6 +94,7 @@ Gstr_synopsis = """
                 re:.*stitution      =  #tag,
                 re:.*ddress         =  #tag
             ' --threads 0 --printElapsedTime
+            
         will replace the explicitly named tags as shown:
         * the ``PatientName`` value will be replaced with a Fake Name,
           seeded on the ``PatientID``;
