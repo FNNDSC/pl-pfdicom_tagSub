@@ -32,11 +32,6 @@ Gstr_title = r"""
 
 Gstr_synopsis = """
 
-(Edit this in-line help for app specifics. At a minimum, the 
-flags below are supported -- in the case of DS apps, both
-positional arguments <inputDir> and <outputDir>; for FS and TS apps
-only <outputDir> -- and similarly for <in> <out> directories
-where necessary.)
 
     NAME
 
@@ -55,8 +50,8 @@ where necessary.)
             [-O|--outputDir <outputDir>]                                \\
             [-F|--tagFile <JSONtagFile>]                                \\
             [-T|--tagStruct <JSONtagStructure>]                         \\
-            [-I|--tagInfo <delimited_parameters>]                       \\
-            [-s|--splitToken <split_token>]                             \\
+            [-n|--tagInfo <delimited_parameters>]                       \\
+            [-s|--splitToken <split_token>] [-k|--splitKey <keySplit>]  \\
             [-o|--outputFileStem <outputFileStem>]                      \\
             [--outputLeafDir <outputLeafDirFormat>]                     \\
             [--threads <numThreads>]                                    \\
@@ -66,16 +61,66 @@ where necessary.)
 
     BRIEF EXAMPLE
 
-        * Bare bones execution
-
-            docker run --rm -u $(id -u)                             \
-                -v $(pwd)/in:/incoming -v $(pwd)/out:/outgoing      \
-                fnndsc/pl-pfdicom_tagSub dcm_tagSub                 \
-                /incoming /outgoing
+        docker run -it --rm -v $(pwd)/in:/incoming -v $(pwd)/out:/outgoing  \\
+        fnndsc/pl-pfdicom_tagsub dcm_tagSub                                 \\
+        --tagStruct '
+        {
+            "PatientName":              "%_name|patientID_PatientName",
+            "PatientID":                "%_md5|7_PatientID",
+            "AccessionNumber":          "%_md5|8_AccessionNumber",
+            "PatientBirthDate":         "%_strmsk|******01_PatientBirthDate",
+            "re:.*hysician":            "%_md5|4_#tag",
+            "re:.*stitution":           "#tag",
+            "re:.*ddress":              "#tag"
+        }
+        ' --threads 0 -v 2 -e .dcm                                           \\
+        /incoming /outgoing
+        
+         -- OR equivalently --
+        pfdicom_tagSub                                      \\
+            -e dcm                                          \\
+            -I /var/www/html/normsmall                      \\
+            -O /var/www/html/anon                           \\
+            --splitToken ","                                \\
+            --splitKeyValue "="                             \\
+            --tagInfo '
+                PatientName         =  %_name|patientID_PatientName,
+                PatientID           =  %_md5|7_PatientID,
+                AccessionNumber     =  %_md5|8_AccessionNumber,
+                PatientBirthDate    =  %_strmsk|******01_PatientBirthDate,
+                re:.*hysician       =  %_md5|4_#tag,
+                re:.*stitution      =  #tag,
+                re:.*ddress         =  #tag
+            ' --threads 0 --printElapsedTime
+        will replace the explicitly named tags as shown:
+        * the ``PatientName`` value will be replaced with a Fake Name,
+          seeded on the ``PatientID``;
+        * the ``PatientID`` value will be replaced with the first 7 characters
+          of an md5 hash of the ``PatientID``;
+        * the ``AccessionNumber``  value will be replaced with the first 8
+          characters of an md5 hash of the `AccessionNumber`;
+        * the ``PatientBirthDate`` value will set the final two characters,
+          i.e. the day of birth, to ``01`` and preserve the other birthdate
+          values;
+        * any tags with the substring ``hysician`` will have their values
+          replaced with the first 4 characters of the corresponding tag value
+          md5 hash;
+        * any tags with ``stitution`` and ``ddress`` substrings in the tag
+          contents will have the corresponding value simply set to the tag
+          name.
+        NOTE:
+        Spelling matters! Especially with the substring bulk replace, please
+        make sure that the substring has no typos, otherwise the target tags
+        will most probably not be processed
 
     DESCRIPTION
 
-        `pfdicom_tagsub.py` ...
+        'dcm_tagSub' is a customizable and friendly DICOM tag substitutor.
+        As part of the "pf*" suite of applications, it is geared to IO as
+        directories. Input DICOM trees are reconstructed in an output
+        directory, preserving directory structure. Each node tree contains
+        a copy of the original DICOM with a user-specified tag list changed
+        in the output.
 
     ARGS
 
@@ -113,16 +158,36 @@ where necessary.)
     	Parse the tags and their "subs" from a JSON formatted <JSONtagFile>.
 
     	[-T|--tagStruct <JSONtagStructure>]
-    	Parse the tags and their "subs" from a JSON formatted <JSONtagStucture>
-    	passed directly in the command line.
-    	
-    	[-I|--tagInfo <delimited_parameters>]
-    	A token delimited tag structure that saves you from the complexity
-    	of creating a well formed JSON structure
-    	
+        Parse the tags and their "subs" from a JSON formatted <JSONtagStucture>
+        string passed directly in the command line. Note that sometimes protecting
+        a JSON string can be tricky, especially when used in scripts or as variable
+        expansions. If the JSON string is problematic, use the [--tagInfo <string>]
+        instead.
+        
+        [-n|--tagInfo <delimited_parameters>]
+    	A token delimited string that is reconstructed into a JSON structure by the
+        script. This is often useful if the [--tagStruict] JSON string is hard to
+        parse in scripts and variable passing within scripts. The format of this
+        string is:
+                "<tag1><splitKeyValue><value1><split_token><tag2><splitKeyValue><value2>"
+        for example:
+                --splitToken ","
+                --splitKeyValue ':'
+                --tagInfo "PatientName:anon,PatientID:%_md5|7_PatientID"
+        or more complexly (esp if the ':' is part of the key):
+                --splitToken "++"
+                --splitKeyValue "="
+                --tagInfo "PatientBirthDate = %_strmsk|******01_PatientBirthDate ++
+                           re:.*hysician"   = %_md5|4_#tag"
+                           
         [-s|--splitToken <split_token>]
         The token on which to split the <delimited_parameters> string.
-        Default is '++'.                             
+        Default is '++'.
+        
+        [-k|--splitKeyValue <keyValueSplit>]
+        The token on which to split the <key> <value> pair. Default is ':'
+        but this can be problematic if the <key> itself has a ':' (for example
+        in the regular expression expansion).                             
 
     	[-o|--outputFileStem <outputFileStem>]
     	The output file stem to store data. This should *not* have a file
@@ -207,12 +272,18 @@ class Dcm_tagSub(ChrisApp):
                             type        = str,
                             optional    = True,
                             default     = '')
-        self.add_argument("-I", "--tagInfo",
+        self.add_argument("-n", "--tagInfo",
                             help        = "A custom delimited tag sub struct",
                             dest        = 'tagInfo',
                             type        = str,
                             optional    = True,
                             default     = '')
+        self.add_argument("-k","--splitKeyValue",
+                            help        = "Expression on which to split the <key><value> pairs",
+                            type        = str,
+                            dest        = 'splitKeyValue',
+                            optional    = True,
+                            default     = ",")
         self.add_argument("-s","--splitToken",
                             help        = "Expression on which to split the <delimited_tag_info>",
                             type        = str,
@@ -266,26 +337,6 @@ class Dcm_tagSub(ChrisApp):
                             optional    = True,
                             default     = False)
 
-    @staticmethod
-    def tag_info_to_struct(token,tagInfo):
-        l_s = tagInfo.split(token)
-        d ={}
-        try:
-            for f in l_s:
-                ss = f.split(':')
-                d[ss[0]] = ss[1]
-        except:
-            print ('Incorrect tag info specified')
-            
-        return json.dumps(dict(d))
-
-    def get_tag_struct(self, options):
-        if options.tagStruct and options.tagInfo:
-            msg = " Must give either tagStruct or tagInfo, not both."
-            raise ValueError(msg)
-        if options.tagInfo:
-            return self.tag_info_to_struct(options.splitToken,options.tagInfo)
-        return options.tagStruct
 
     def run(self, options):
         """
@@ -302,7 +353,10 @@ class Dcm_tagSub(ChrisApp):
                         outputFileStem      = options.outputFileStem,
                         outputLeafDir       = options.outputLeafDir,
                         tagFile             = options.tagFile,
-                        tagStruct           = self.get_tag_struct(options),
+                        tagStruct           = options.tagStruct,
+                        splitToken          = options.splitToken,
+                        splitKeyValue       = options.splitKeyValue,
+                        tagInfo             = options.tagInfo,
                         threads             = options.threads,
                         verbosity           = options.verbosity,
                         followLinks         = options.followLinks,
