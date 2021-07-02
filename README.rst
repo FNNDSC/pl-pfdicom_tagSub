@@ -2,7 +2,7 @@ pl-pfdicom_tagSub
 ================================
 
 .. image:: https://img.shields.io/docker/v/fnndsc/pl-pfdicom_tagsub?sort=semver
-    :target: https://hub.docker.com/r/fnndsc/pl-pfdicom_tagSub
+    :target: https://hub.docker.com/r/fnndsc/pl-pfdicom_tagsub
 
 .. image:: https://img.shields.io/github/license/fnndsc/pl-pfdicom_tagSub
     :target: https://github.com/FNNDSC/pl-pfdicom_tagSub/blob/master/LICENSE
