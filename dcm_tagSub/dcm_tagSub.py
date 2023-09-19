@@ -13,7 +13,7 @@ import os
 import re
 import json
 # import the pfdicom_tagSub module
-import  pfdicom_tagSub
+from pfdicom_tagSub import  pfdicom_tagSub
 import  pudb
 import  sys
 
@@ -256,12 +256,38 @@ class Dcm_tagSub(ChrisApp):
                             type        = str,
                             optional    = True,
                             default     = '')
-        self.add_argument("-e", "--extension",
+        self.add_argument("-e", "--fileFilter",
                             help        = "DICOM file extension",
-                            dest        = 'extension',
                             type        = str,
+                            dest        = 'fileFilter',
                             optional    = True,
                             default     = '')
+        self.add_argument("--fileFilterLogic",
+                            help        = "the logic to apply across the file filter",
+                            optional    = True,
+                            type        = str,
+                            dest        = 'fileFilterLogic',
+                            default     = 'OR')
+        self.add_argument("-d", "--dirFilter",
+                            help        = "a list of comma separated string filters to apply across the input dir space",
+                            type        = str,
+                            dest        = 'dirFilter',
+                            optional    = True,
+                            default     = '')
+        self.add_argument("--dirFilterLogic",
+                            help        = "the logic to apply across the dir filter",
+                            dest        = 'dirFilterLogic',
+                            optional    = True,
+                            type        = str,
+                            default     = 'OR')
+        self.add_argument("--syslog",
+                            help        = "show outputs in syslog style",
+                            dest        = 'syslog',
+                            action      = 'store_true',
+                            optional    = True,
+                            type        = bool,
+                            default     = False)
+
         self.add_argument("-F", "--tagFile",
                             help        = "JSON formatted file containing tags to sub",
                             dest        = 'tagFile',
@@ -347,24 +373,15 @@ class Dcm_tagSub(ChrisApp):
         
         print(Gstr_title)
         print('Version: %s' % self.get_version())
-        pf_dicom_tagSub = pfdicom_tagSub.pfdicom_tagSub(
-                        inputDir            = options.inputdir,
-                        inputFile           = options.inputFile,
-                        extension           = options.extension,
-                        outputDir           = options.outputdir,
-                        outputFileStem      = options.outputFileStem,
-                        outputLeafDir       = options.outputLeafDir,
-                        tagFile             = options.tagFile,
-                        tagStruct           = options.tagStruct,
-                        splitToken          = options.splitToken,
-                        splitKeyValue       = options.splitKeyValue,
-                        tagInfo             = options.tagInfo,
-                        threads             = options.threads,
-                        verbosity           = options.verbosity,
-                        followLinks         = options.followLinks,
-                        json                = options.jsonReturn
-                    )
+        options.str_desc = ""
 
+        # Output the space of CLI
+        d_options = vars(options)
+        for k, v in d_options.items():
+            print("%20s: %-40s" % (k, v))
+        print("")
+
+        pf_dicom_tagSub = pfdicom_tagSub.pfdicom_tagSub(d_options)
         if options.version:
             print('Plugin Version: %s' % Dcm_tagSub.VERSION)
             print('Internal pfdicom_tagSub Version: %s' % pf_dicom_tagSub.str_version)
