@@ -48,6 +48,7 @@ Usage
         [-k|--splitKeyValue <keySplit>]             
         [-o|--outputFileStem <outputFileStem>]
         [--outputLeafDir <outputLeafDirFormat>]
+        [--removePrivateTags]
         [--threads <numThreads>]
         <inputDir> <outputDir>
 
@@ -146,6 +147,9 @@ Arguments
     where %s is the original leaf directory node, will prefix each
     final directory containing output with the text 'preview-' which
     can be useful in describing some features of the output set.
+
+    [--removePrivateTags]
+    If specified, remove all the private tag elements from the input DICOMs
 
     [--threads <numThreads>]
     If specified, break the innermost analysis loop into <numThreads>
